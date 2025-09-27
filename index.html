@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sype</title>
+  <style>
+    * {margin:0; padding:0; box-sizing:border-box;}
+    body {
+      font-family: "Segoe UI", sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      background: #0f0f1a;
+    }
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: -3;
+    }
+    @keyframes wave {
+      from {background-position-x:0;}
+      to {background-position-x:1000px;}
+    }
+    header {
+      padding: 6rem 1rem 3rem;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      white-space: nowrap;
+      border-right: .15em solid #66c2ff;
+      overflow: hidden;
+      width: 0;
+      animation: typing 3s steps(30,end) forwards, blink .75s step-end infinite;
+    }
+    @keyframes typing { to { width: 100%; } }
+    @keyframes blink { 50% { border-color: transparent; } }
+    header p { font-size:1.3rem; color:#aaa; opacity:0; animation: fadeIn 2s ease 3s forwards;}
+    @keyframes fadeIn { to {opacity:1;} }
+
+    section {
+      max-width: 900px;
+      margin: auto;
+      padding: 2rem 1rem;
+    }
+    .card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 2rem;
+      margin: 2rem 0;
+      backdrop-filter: blur(10px);
+      transition: transform .4s, box-shadow .4s;
+      box-shadow: 0 0 20px rgba(102,194,255,0.1);
+    }
+    .card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 0 30px rgba(102,194,255,0.6);
+    }
+    a {color:#66c2ff; text-decoration:none;}
+    footer {
+      text-align:center;
+      padding:1rem;
+      color:#888;
+    }
+    /* parallax layer */
+    .parallax {
+      position: fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.05), transparent 70%);
+      z-index:-1;
+      pointer-events:none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bg"></canvas>
+  <div class="parallax" id="parallax"></div>
+  <div class="waves"></div>
+
+  <header>
+    <h1>Hello, I'm Sype</h1>
+    <p>Developer</p>
+  </header>
+
+  <section>
+    <div class="card">
+      <h2>About Me</h2>
+      <p>     </p>
+    </div>
+    <div class="card">
+      <h2>Projects</h2>
+      <ul style="list-style:none; padding:0;">
+        <li><a href="#">     </a> </li>
+        <li><a href="#">     </a> </li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Contact</h2>
+      <p><a href="mailto:alperenunlu66@gmail.com">alperenunlu66@gmail.com</a></p>
+    </div>
+  </section>
+
+  <footer>
+
+  </footer>
+
+  <script>
+    // particles
+    const canvas=document.getElementById("bg");
+    const ctx=canvas.getContext("2d");
+    let particles=[];
+    function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
+    window.addEventListener("resize",resize);resize();
+    class Particle{
+      constructor(x,y){this.x=x;this.y=y;this.r=Math.random()*2+1;this.sx=Math.random()*2-1;this.sy=Math.random()*2-1;}
+      update(){this.x+=this.sx;this.y+=this.sy;if(this.x<0||this.x>canvas.width)this.sx*=-1;if(this.y<0||this.y>canvas.height)this.sy*=-1;}
+      draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle="#66c2ff";ctx.fill();}
+    }
+    for(let i=0;i<120;i++){particles.push(new Particle(Math.random()*canvas.width,Math.random()*canvas.height));}
+    function animate(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      for(let p of particles){p.update();p.draw();}
+      for(let a=0;a<particles.length;a++){
+        for(let b=a;b<particles.length;b++){
+          let dx=particles[a].x-particles[b].x,dy=particles[a].y-particles[b].y,dist=Math.sqrt(dx*dx+dy*dy);
+          if(dist<100){ctx.strokeStyle="rgba(102,194,255,"+(1-dist/100)+")";ctx.beginPath();ctx.moveTo(particles[a].x,particles[a].y);ctx.lineTo(particles[b].x,particles[b].y);ctx.stroke();}
+        }
+      }
+      requestAnimationFrame(animate);
+    } animate();
+
+    // parallax
+    const parallax=document.getElementById("parallax");
+    document.addEventListener("mousemove",e=>{
+      let x=(e.clientX/window.innerWidth-0.5)*20;
+      let y=(e.clientY/window.innerHeight-0.5)*20;
+      parallax.style.transform=`translate(${x}px,${y}px)`;
+    });
+  </script>
+</body>
+</html>
