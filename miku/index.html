@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portal 1 - Still Alive Lyrics</title>
+<style>
+:root{--green:#2bff88;--red:#ff4d4d;--blur-radius: 5px}
+body{background:#000;font-family:"Courier New",monospace;color:var(--green);margin:0;overflow:hidden}
+#crt{position:fixed;inset:0;pointer-events:none;z-index:50;background:repeating-linear-gradient(0deg,rgba(0,255,0,0.03)0 2px,transparent 2px 4px)}
+#leftBox{
+    position:fixed;
+    left:20px;
+    top:20px;
+    width:420px;
+    /* Height calculation adjusted for alignment */
+    bottom:20px;
+    border:2px solid var(--green);
+    padding:12px;
+    box-sizing:border-box;
+    background:rgba(0,0,0,0.6);
+    overflow:hidden;
+}
+#lineBox{height:100%;overflow-y:auto;padding-right:6px}
+
+#staticTop{
+    position:fixed;
+    right:20px;
+    top:20px;
+    width:408px;
+    border:2px solid var(--green);
+    padding:10px;
+    font-size:18px;
+    background:rgba(0,0,0,0.6);
+    box-sizing:border-box;
+}
+#videoBox{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    width:408px;
+    height:408px;
+    border:3px solid var(--green);
+    box-sizing:border-box;
+    background:rgba(0,0,0,0.8);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+#videoBox video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    /* Video oynatılmadan önce bulanıklaştırma */
+    filter: blur(var(--blur-radius));
+    transition: filter 0.5s ease-in-out;
+}
+#videoBox.playing video {
+    /* Oynatmaya başlanınca bulanıklığı kaldır */
+    filter: blur(0);
+}
+#startButton{
+    position:absolute;
+    padding:15px 30px; /* Daha büyük boyut */
+    font-size: 36px; /* Daha belirgin font */
+    background: var(--red); /* Dikkat çekmesi için farklı bir renk */
+    color: var(--green);
+    border: 5px solid var(--green);
+    cursor:pointer;
+    z-index: 100; /* En ön plana çıkarma */
+    transition: all 0.2s;
+    font-family:"Courier New",monospace;
+    box-shadow: 0 0 20px var(--green); /* Daha belirgin gölge */
+    animation: pulse 1.5s infinite; /* Dikkat çekmesi için animasyon */
+}
+#startButton:hover{
+    background: var(--green);
+    color: #000;
+    border-color: var(--red);
+    box-shadow: 0 0 25px var(--red);
+    animation: none;
+}
+
+/* START butonu için titreşim efekti */
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.line{margin:6px 0;white-space:pre-wrap}
+.typingCursor{border-right:2px solid var(--green);animation:cursor .7s infinite;padding-right:6px}
+@keyframes cursor{0%{border-color:transparent}50%{border-color:var(--green)}100%{border-color:transparent}}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-thumb{background:rgba(43,255,136,0.2)}
+</style>
+</head>
+<body>
+<div id="crt"></div>
+
+<div id="leftBox">
+    <div id="lineBox"></div>
+</div>
+
+<div id="videoBox">
+    <video id="player" src="video.mp4" playsinline></video> 
+    <button id="startButton">Start</button>
+</div>
+
+<script>
+const lyrics = [
+    // Verse 1 - Start: 0:00
+    { t: 0, text: "This was a triumph." },
+    { t: 4, text: "I'm making a note here:" },
+    { t: 6, text: "HUGE SUCCESS." },
+    { t: 8, text: "It's hard to overstate" },
+    { t: 11,text: "my satisfaction." },
+    { t: 16,text: "Aperture Science" },
+    { t: 20,text: "We do what we must" },
+    { t: 21,text: "because we can." },
+    { t: 25,text: "For the good of all of us." },
+    { t: 28,text: "Except the ones who are dead." },
+    { t: 30,text: "But there's no sense crying" },
+    { t: 32,text: "over every mistake." },
+    { t: 34,text: "You just keep on trying" },
+    { t: 37,text: "till you run out of cake." },
+    { t: 38, text: "And the Science gets done." },
+    { t: 40, text: "And you make a neat gun." },
+    { t: 43, text: "For the people who are" },
+    { t: 44, text: "still alive." },
+
+    // Verse 2 - Start: 0:51
+    { t: 50.5, text: "CONSOLE_CLEAR" }, 
+    { t: 51,text: "I'm not even angry." },
+    { t: 56,text: "I'm being so sincere right now." },
+    { t: 61,text: "Even though you broke my heart." },
+    { t: 65,text: "And killed me." },
+    { t: 68,text: "And tore me to pieces." },
+    { t: 72,text: "And threw every piece into a fire." },
+    { t: 77,text: "As they burned it hurt because" },
+    { t: 80,text: "I was so happy for you!" },
+    { t: 83,text: "Now these points of data" },
+    { t: 84,text: "make a beautiful line." },
+    { t: 86,text: "And we're out of beta." },
+    { t: 88,text: "We're releasing on time." },
+    { t: 91,text: "So I'm GLaD. I got burned." },
+    { t: 93,text: "Think of all the things we learned" },
+    { t: 95,text: "for the people who are" },
+    { t: 96,text: "still alive." },
+
+    // Verse 3 - Start: 1:45
+    { t: 104.5, text: "CONSOLE_CLEAR" }, 
+    { t: 105, text: "Go ahead and leave me." },
+    { t: 108, text: "I think I prefer to stay inside." },
+    { t: 113, text: "Maybe you'll find someone else" },
+    { t: 116, text: "to help you." },
+    { t: 120, text: "Maybe Black Mesa..." },
+    { t: 124, text: "THAT WAS A JOKE. HA HA. FAT CHANCE." },
+    { t: 129, text: "Anyway, this cake is great." },
+    { t: 132, text: "It's so delicious and moist." },
+    { t: 134, text: "Look at me still talking" },
+    { t: 136, text: "when there's Science to do." },
+    { t: 139, text: "When I look out there," },
+    { t: 140, text: "it makes me GLaD I'm not you." },
+    { t: 143, text: "I've experiments to run." },
+    { t: 145, text: "There is research to be done." },
+    { t: 147, text: "On the people who are" },
+    { t: 149, text: "still alive." },
+
+    // Post-Script - Start: 2:30
+    { t: 149.5, text: "CONSOLE_CLEAR" }, 
+    { t: 150, text: "PS: And believe me I am" },
+    { t: 152, text: "still alive." },
+    { t: 155, text: "PPS: I'm doing Science and I'm" },
+    { t: 156, text: "still alive." },
+    { t: 157, text: "PPPS: I feel FANTASTIC and I'm" },
+    { t: 158, text: "still alive." },
+    { t: 162, text: "FINAL THOUGHT: While you're dying I'll be" },
+    { t: 164, text: "still alive." },
+    { t: 167, text: "FINAL THOUGHT PS: And when you're dead I will be" },
+    { t: 168, text: "still alive." },
+
+    // Final - Start: 2:50
+    { t: 169.5, text: "CONSOLE_CLEAR" }, 
+    { t: 170, text: "STILL ALIVE" },
+    { t: 172, text: "Still alive." }
+];
+
+const lineBox = document.getElementById('lineBox');
+const video = document.getElementById('player');
+const videoBox = document.getElementById('videoBox');
+const startButton = document.getElementById('startButton');
+
+lineBox.innerHTML='';
+let shown = {};
+let triggerInterval = null;
+
+// --- Core Lyric Logic ---
+
+function makeLine(text){
+ const p = document.createElement('div');
+ p.className='line';
+ lineBox.appendChild(p);
+ lineBox.scrollTop = lineBox.scrollHeight;
+ return p;
+}
+
+function typeWriteToElement(el,str,perChar=40){
+ return new Promise(res=>{
+  el.classList.add('typingCursor');
+  let i=0;
+  function step(){
+   if(i<str.length){
+    el.textContent += str[i];
+    lineBox.scrollTop = lineBox.scrollHeight;
+    i++;
+    setTimeout(step,perChar);
+   }else{
+    el.classList.remove('typingCursor');
+    res();
+   }
+  }
+  step();
+ });
+}
+
+function triggerLine(l){
+ if (l.text === "CONSOLE_CLEAR") {
+   console.clear();
+    // Clear the left box for visual effect
+    lineBox.innerHTML = ''; 
+   return;
+ }
+ const p = makeLine('');
+ typeWriteToElement(p,l.text);
+}
+
+function checkTriggers(){
+ const vTime = video.currentTime;
+ lyrics.forEach(l=>{
+  if(!shown[l.t] && vTime>=l.t){
+    shown[l.t]=true;
+    triggerLine(l);
+  }
+ });
+}
+
+// --- Start Button Logic ---
+
+startButton.addEventListener('click', async () => {
+  // 1. Video ve sesi başlat
+  video.play();
+  
+  // 2. Video alanındaki bulanıklığı kaldır
+  videoBox.classList.add('playing');
+  
+  // 3. Butonu gizle
+  startButton.style.display = 'none';
+  
+  // 4. Şarkı sözü tetikleyicisini başlat
+  triggerInterval = setInterval(checkTriggers, 100);
+});
+
+// leftBox yüksekliğini sağ sütunun dikey aralığına uyacak şekilde ayarla
+// Bu, CSS'teki bottom:20px ve top:20px ile zaten başarılıdır.
+</script>
+</body>
+</html>
