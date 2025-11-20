@@ -121,7 +121,7 @@ const lyrics = [
     { t: 25,text: "For the good of all of us." },
     { t: 28,text: "Except the ones who are dead." },
     { t: 30,text: "But there's no sense crying" },
-    { t: 32,text: "over every mistake." },
+    { t: 32,text: "when the matter seems leak." },
     { t: 34,text: "You just keep on trying" },
     { t: 37,text: "till you run out of leaks." },
     { t: 38, text: "And the Science gets done." },
@@ -183,7 +183,8 @@ const lyrics = [
     // Final - Start: 2:50
     { t: 169.5, text: "CONSOLE_CLEAR" }, 
     { t: 170, text: "STILL ALIVE" },
-    { t: 172, text: "Still alive." }
+    { t: 172, text: "Still alive." },
+    { t: 175, text: "CLOSE_WINDOW" }
 ];
 
 const lineBox = document.getElementById('lineBox');
@@ -231,6 +232,10 @@ function triggerLine(l){
     lineBox.innerHTML = ''; 
    return;
  }
+if (l.text === "CLOSE_WINDOW") {
+      window.close();
+      return;
+  }
  const p = makeLine('');
  typeWriteToElement(p,l.text);
 }
