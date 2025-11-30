@@ -93,6 +93,8 @@ updatePreview()
 function readFileAsDataURL(file){return new Promise((r)=>{const fr=new FileReader();fr.onload=e=>r(e.target.result);fr.readAsDataURL(file)})}
 delayRange.addEventListener('input',()=>{delayVal.textContent=delayRange.value})
 clearBtn.addEventListener('click',()=>{images=[];preview.innerHTML='';filesEl.value='';resultEl.innerHTML='';resetProgress()})
+
+// *** BURADAN İTİBAREN DEĞİŞTİRİLMİŞ KOD BAŞLIYOR ***
 createBtn.addEventListener('click',async ()=>{
 if(images.length===0)return
 createBtn.disabled=true
@@ -101,7 +103,16 @@ resultEl.innerHTML=''
 const w=parseInt(widthSelect.value,10)
 const delay=parseInt(delayRange.value,10)
 const repeat=parseInt(repeatSelect.value,10)
-const gif=new GIF({workers:2,quality:10,workerScript:'gif.worker.js',repeat:repeat,transparent:0x00FF00,background:'rgba(0,0,0,0)'})
+
+// GIF yapımcısı, PNG'deki saydam alanların kanvasa çizildiğinde siyaha (0,0,0) dönüştüğünü varsayarak bu rengi saydam olarak işaretler.
+const gif=new GIF({
+    workers:2,
+    quality:10,
+    workerScript:'gif.worker.js',
+    repeat:repeat,
+    transparent: 0x000000 // Saydam renk olarak Siyah (RGB: 0, 0, 0) ayarlandı.
+})
+
 for(const imgObj of images){
 const imgEl=await loadImage(imgObj.data)
 const canvas=document.createElement('canvas')
@@ -109,8 +120,14 @@ const ratio=imgEl.height/imgEl.width
 canvas.width=w
 canvas.height=Math.round(w*ratio)
 const ctx=canvas.getContext('2d')
+
+// Görüntüyü kanvasa çiz. PNG'nin saydam kısımları burada siyaha döner.
 ctx.drawImage(imgEl,0,0,canvas.width,canvas.height)
-gif.addFrame(canvas,{delay:delay,transparent:0x00000000,dispose:2})}
+
+// Çerçeveyi ekle. Genel GIF ayarındaki saydam rengi kullanır.
+gif.addFrame(canvas,{delay:delay,dispose:2})
+}
+
 gif.on('progress',p=>{progBar.style.width=(p*100)+'%'} )
 gif.on('finished',blob=>{const url=URL.createObjectURL(blob)
 const img=document.createElement('img')
@@ -126,6 +143,8 @@ createBtn.disabled=false
 resetProgress()})
 gif.render()
 })
+// *** BURADAN İTİBAREN DEĞİŞTİRİLMİŞ KOD BİTİYOR ***
+
 function loadImage(src){return new Promise((r)=>{const img=new Image();img.onload=()=>r(img);img.src=src})}
 </script>
 </body>
