@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Basit GIF Yapıcı</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.min.css">
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;--bg:#0f172a;--card:#0b1220;--accent:#06b6d4;--muted:#94a3b8}
+*{box-sizing:border-box}
+html,body{height:100%;background:linear-gradient(180deg,var(--bg),#071027);color:#e6eef8}
+.container{max-width:960px;margin:36px auto;padding:20px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.h1{font-size:20px;font-weight:700}
+.controls{display:flex;gap:10px;flex-wrap:wrap}
+.card{background:rgba(255,255,255,0.02);padding:12px;border-radius:8px}
+input[type=file]{padding:6px}
+.options{display:flex;gap:10px;align-items:center}
+label{font-size:13px;color:var(--muted)}
+.preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px}
+.thumb{background:#051022;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;height:88px}
+.thumb img{max-width:100%;max-height:100%;display:block}
+.footer{display:flex;gap:8px;margin-top:14px;align-items:center}
+.btn{background:var(--accent);color:#012;padding:8px 12px;border-radius:8px;border:none;font-weight:600;cursor:pointer}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+.progress{height:8px;background:rgba(255,255,255,0.04);border-radius:999px;overflow:hidden;width:100%}
+.progress > i{display:block;height:100%;width:0;background:linear-gradient(90deg,rgba(255,255,255,0.15),rgba(255,255,255,0.28));transition:width 200ms}
+.result{margin-top:12px;display:flex;gap:12px;align-items:center}
+.result img{max-width:220px;border-radius:8px;background:#021025;padding:6px}
+.small{font-size:13px;color:var(--muted)}
+.range{appearance:none;width:140px}
+.param{display:flex;gap:8px;align-items:center}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<div class="h1">Basit GIF Yapıcı</div>
+<div class="small">Github Pages için hazır</div>
+</div>
+<div class="card">
+<div class="controls">
+<input id="files" type="file" accept="image/*" multiple>
+<div class="options">
+<div class="param"><label for="delay">Frame gecikme (ms)</label><input id="delay" class="range" type="range" min="20" max="1000" value="200"><span id="delayVal">200</span></div>
+<div class="param"><label for="width">Genişlik</label><select id="width"><option value="320">320</option><option value="480" selected>480</option><option value="640">640</option><option value="800">800</option></select></div>
+<div class="param"><label for="repeat">Tekrar</label><select id="repeat"><option value="0">Sonsuz</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+</div>
+</div>
+<div class="preview" id="preview"></div>
+<div class="footer">
+<button id="create" class="btn">GIF Oluştur</button>
+<button id="clear" class="btn" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:inherit">Temizle</button>
+<div style="flex:1"></div>
+</div>
+<div style="margin-top:12px">
+<div class="progress"><i id="prog"></i></div>
+</div>
+<div class="result" id="result"></div>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+<script>
+const filesEl=document.getElementById('files')
+const preview=document.getElementById('preview')
+const createBtn=document.getElementById('create')
+const clearBtn=document.getElementById('clear')
+const delayRange=document.getElementById('delay')
+const delayVal=document.getElementById('delayVal')
+const widthSelect=document.getElementById('width')
+const repeatSelect=document.getElementById('repeat')
+const progBar=document.getElementById('prog')
+const resultEl=document.getElementById('result')
+let images=[]
+function resetProgress(){progBar.style.width='0%'}
+function updatePreview(){preview.innerHTML=''
+images.forEach(file=>{
+const box=document.createElement('div')
+box.className='thumb'
+const img=document.createElement('img')
+img.src=file.data
+box.appendChild(img)
+preview.appendChild(box)
+})}
+filesEl.addEventListener('change',async e=>{
+const list=Array.from(e.target.files)
+images=[]
+for(const f of list){
+const data=await readFileAsDataURL(f)
+images.push({name:f.name,data})}
+updatePreview()
+})
+function readFileAsDataURL(file){return new Promise((r)=>{const fr=new FileReader();fr.onload=e=>r(e.target.result);fr.readAsDataURL(file)})}
+delayRange.addEventListener('input',()=>{delayVal.textContent=delayRange.value})
+clearBtn.addEventListener('click',()=>{images=[];preview.innerHTML='';filesEl.value='';resultEl.innerHTML='';resetProgress()})
+createBtn.addEventListener('click',async ()=>{
+if(images.length===0)return
+createBtn.disabled=true
+resetProgress()
+resultEl.innerHTML=''
+const w=parseInt(widthSelect.value,10)
+const delay=parseInt(delayRange.value,10)
+const repeat=parseInt(repeatSelect.value,10)
+const gif=new GIF({workers:2,quality:10,workerScript:'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js',repeat:repeat})
+for(const imgObj of images){
+const imgEl=await loadImage(imgObj.data)
+const canvas=document.createElement('canvas')
+const ratio=imgEl.height/imgEl.width
+canvas.width=w
+canvas.height=Math.round(w*ratio)
+const ctx=canvas.getContext('2d')
+ctx.drawImage(imgEl,0,0,canvas.width,canvas.height)
+gif.addFrame(canvas,{delay:delay})}
+gif.on('progress',p=>{progBar.style.width=(p*100)+'%'} )
+gif.on('finished',blob=>{const url=URL.createObjectURL(blob)
+const img=document.createElement('img')
+img.src=url
+const a=document.createElement('a')
+a.href=url
+a.download='created.gif'
+a.textContent='GIF indir'
+a.className='btn'
+resultEl.appendChild(img)
+resultEl.appendChild(a)
+createBtn.disabled=false
+resetProgress()})
+gif.render()
+})
+function loadImage(src){return new Promise((r)=>{const img=new Image();img.onload=()=>r(img);img.src=src})}
+</script>
+</body>
+</html>
